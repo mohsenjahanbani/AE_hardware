@@ -1,0 +1,65 @@
+Build a Design
+
+
+$ cd ./hardware/vivado-2017.2/pynq-caesar
+
+$ make <cipher>_setup to only create vivado project
+
+$ make <cipher>_synth to create the vivado project, the bitfile and block design TCL
+
+
+
+Test a Design:
+
+Prepare the files on the local machine:
+
+
+$ cp ./hardware/bitstream/cipher>.bit ./sdcard/bitstreams/
+
+$ cp ./hardware/tcl/bd/<cipher>.tcl ./sdcard/bitstreams/ 
+$ scp -r ./sdcard xilinx@<pnyq-ip>
+
+
+Run them on PYNQ:
+
+
+$ ssh xilinx@<pnyq-ip>
+enable designs in ~/sdcard/python/batch.sh 
+
+$ sudo ~/sdcard/python/batch.sh 
+Results can be found in ./sdcard/python/<cipher>.csv
+
+
+
+
+Create your own Design:
+
+
+starting with the provided template: cp ./hardware/vivado-2017.2/ip/template ./hardware/vivado-2017.2/ip/<your_design>
+
+add your CipherCore implenetation to hardware/vivado-2017.2/ip/<your_design>/ciphercore
+
+generate an IP-Core with the provided tcl script
+
+
+adjust the variables in ./hardware/tcl/ip/package_ip.tcl
+
+$ cd ./hardware/vivado-2017.2/pynq-caesar
+$ make package_ip
+
+
+Create a block design using vivado (best is to start with an existing design or the provided dummy1.xpr (make dummy1_setup)
+
+
+
+Integrate your Desing into the Design Flow:
+
+
+use the write_bd_tcl <your-design>.tcl command in vivado to create a tcl representation of your block design.
+Copy <your-design>.tclto ./hardware/tcl/bd/
+
+Execute./hardware/tcl/create_tcl.sh > Makefile
+
+Copy new Makefile to ./hardware/vivado-2017.2/pynq-caesar
+
+Now you can regenerate <your-design> using make <your-design>_setup
